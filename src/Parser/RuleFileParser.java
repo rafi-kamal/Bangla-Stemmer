@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
 import com.sun.org.apache.xerces.internal.xs.StringList;
 
@@ -16,7 +17,7 @@ public class RuleFileParser {
 	
 	public RuleFileParser(String p)
 	{
-		
+		dependantCharSetInstallation();
 		Charset charset=Charset.forName("UTF-8");
 		Path path=FileSystems.getDefault().getPath(p);
 		l=new ArrayList<String> ();
@@ -26,6 +27,9 @@ public class RuleFileParser {
 			String line = null;
 		    while ((line = reader.readLine()) != null)
 		    {
+		    	line=whiteSpaceTrim(line);
+		    	line=commentTrim(line);
+		    	if(line.equals("")) continue;
 		    	l.add(line);
 		    }
 			
@@ -50,10 +54,66 @@ public class RuleFileParser {
 				cnt++;
 			}
 		}
-		for(i=0;i<pass.get(2).size();i++)
+		
+		stemOfWord("সেটাই");
+		
+	}
+	
+	public String whiteSpaceTrim(String str)
+	{
+		return str.replaceAll("[\t' ']+", "");
+	}
+	
+	public String commentTrim(String str)
+	{
+		return str.replaceAll("#.*", "");
+	}
+	
+	public  String stemOfWord(String word)
+	{
+		int i,j;
+		
+		for(i=0;i<pass.size();i++)
 		{
-			System.out.println(pass.get(2).get(i));
+			for(j=0;j<pass.get(i).size();j++)
+			{
+				String matcher=".*";
+				matcher+=pass.get(i).get(j);
+				if(word.matches(matcher))
+				{
+					int indx=word.length() - pass.get(i).get(j).length();
+					if(check(word.substring(0, indx)))
+					{
+						word=word.substring(0, indx);
+					}
+					System.out.println(word+" "+indx);
+				}
+			}
 		}
+		return word;
+	}
+	
+	public void dependantCharSetInstallation()
+	{
+		st=new TreeSet<Character>();
+		st.add('া');
+		st.add('ি');
+		st.add('ী');
+		st.add('ে');
+		st.add('ু');
+		st.add('ূ');
+		st.add('ো');
+	}
+	
+	public boolean check(String x)
+	{
+		int i;
+		int ln=0;
+		for(i=0;i<ln;i++)
+		{
+			
+		}
+		return true;
 	}
 	
 	private ArrayList<String> l;
@@ -61,6 +121,8 @@ public class RuleFileParser {
 	
 	String curlyOpen="{";
 	String curlyClose="}";
+	
+	private TreeSet<Character> st;
 	
 	
 }
