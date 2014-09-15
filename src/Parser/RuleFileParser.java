@@ -55,7 +55,9 @@ public class RuleFileParser {
 			}
 		}
 		
-		stemOfWord("সেটাই");
+		
+		
+		stemOfWord("করেছিলেন");
 		
 	}
 	
@@ -85,8 +87,8 @@ public class RuleFileParser {
 					if(check(word.substring(0, indx)))
 					{
 						word=word.substring(0, indx);
+						System.out.println(word+" "+indx);
 					}
-					System.out.println(word+" "+indx);
 				}
 			}
 		}
@@ -109,12 +111,17 @@ public class RuleFileParser {
 	{
 		int i;
 		int ln=0;
-		for(i=0;i<ln;i++)
+		
+		for(i=0;i<x.length();i++)
 		{
-			
+			if(st.contains(x.charAt(i))) continue;
+			ln++;
 		}
-		return true;
+		
+		return ln>1;
 	}
+	
+	
 	
 	private ArrayList<String> l;
 	private ArrayList< ArrayList<String> > pass;
