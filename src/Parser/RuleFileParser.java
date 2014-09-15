@@ -31,8 +31,7 @@ public class RuleFileParser {
 		    	line=whiteSpaceTrim(line);
 		    	line=commentTrim(line);
 		    	if(line.equals("")) continue;
-		    	
-		    	
+		    	String replace=extractReplaceRule(line);
 		    	
 		    	l.add(line);
 		    }
@@ -82,6 +81,8 @@ public class RuleFileParser {
 		return "";
 	}
 	
+	
+	
 	public  String stemOfWord(String word)
 	{
 		int i,j;
@@ -118,6 +119,20 @@ public class RuleFileParser {
 		st.add('ো');
 	}
 	
+	public void escapeOfRuleInstallation()
+	{
+		escape=new TreeSet<String>();
+		escape.add("চ্ছি");
+		escape.add("চ্ছিল");
+		escape.add("চ্ছে");
+		escape.add("চ্ছিস");
+		escape.add("চ্ছিলেন");
+		escape.add("টি");
+		escape.add("টা");
+		escape.add("েরটা");
+		escape.add("গুলো");
+	}
+	
 	public boolean check(String x)
 	{
 		int i;
@@ -141,6 +156,7 @@ public class RuleFileParser {
 	String curlyClose="}";
 	
 	private TreeSet<Character> st;
+	private TreeSet<String> escape;
 	private HashMap<String,String> replaceRule;
 	
 	
