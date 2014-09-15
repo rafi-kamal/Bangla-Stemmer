@@ -8,23 +8,31 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.TreeSet;
-
-import com.sun.org.apache.xerces.internal.xs.StringList;
 
 
 public class RuleFileParser {
+	
+	private ArrayList<String> lines ;
+	private ArrayList< ArrayList<String> > pass;
+	
+	private static final String CURLY_OPEN = "{";
+	private static final String CURLY_CLOSE = "}";
+	
+	private TreeSet<Character> st;
+	private TreeSet<String> escape;
+	private HashMap<String,String> replaceRule;
 	
 	public RuleFileParser(String p)
 	{
 		replaceRule= new HashMap<String,String>();
 		dependantCharSetInstallation();
-		escapeOfRuleInstallation();
+//		escapeOfRuleInstallation();
 		Charset charset=Charset.forName("UTF-8");
 		Path path=FileSystems.getDefault().getPath(p);
-		l=new ArrayList<String> ();
+		lines = new ArrayList<String> ();
 		pass=new ArrayList< ArrayList<String> >();
+		
 		try(BufferedReader reader=Files.newBufferedReader(path, charset))
 		{
 			String line = null;
@@ -39,25 +47,25 @@ public class RuleFileParser {
 		    	{
 		    		replaceRule.put(line,replace);
 		    	}
-		    	l.add(line);
+		    	lines.add(line);
 		    }
 			
 		}
 		catch (IOException x)
 		{
-		    System.err.format("IOException: %s%n", x);
+		    x.printStackTrace();
 		}
+		
 		int cnt=0;
-		int i;
-		for(i=0;i<l.size();i++)
+		for(int i=0;i<lines.size();i++)
 		{
-			if(l.get(i).equals(curlyOpen))
+			if(lines.get(i).equals(CURLY_OPEN))
 			{
 				pass.add(new ArrayList<String>());
 				i++;
-				while(i<l.size() && ! l.get(i).equals(curlyClose))
+				while(i<lines.size() && ! lines.get(i).equals(CURLY_CLOSE))
 				{
-					pass.get(cnt).add(l.get(i));
+					pass.get(cnt).add(lines.get(i));
 					i++;
 				}
 				cnt++;
@@ -66,29 +74,27 @@ public class RuleFileParser {
 		
 	}
 	
-	public String whiteSpaceTrim(String str)
+	private String whiteSpaceTrim(String str)
 	{
 		return str.replaceAll("[\t' ']+", "");
 	}
 	
-	public String commentTrim(String str)
+	private String commentTrim(String str)
 	{
 		return str.replaceAll("#.*", "");
 	}
 	
-	public String extractReplaceRule(String x)
+	private String extractReplaceRule(String str)
 	{
-		if(x.matches(".*->.*"))
+		if(str.matches(".*->.*"))
 		{
-			String[] l=x.split("->");
+			String[] l=str.split("->");
 			return l[1];
 		}
 		return "";
 	}
 	
-	
-	
-	public  String stemOfWord(String word)
+	public String stemOfWord(String word)
 	{
 		int i,j;
 		
@@ -96,37 +102,40 @@ public class RuleFileParser {
 		{
 			for(j=0;j<pass.get(i).size();j++)
 			{
-				String matcher=".*";
-				matcher+=pass.get(i).get(j);
+				String replacePrefix = pass.get(i).get(j);
+				
+				String matcher = ".*" + replacePrefix + "$";
 				if(word.matches(matcher))
 				{
-					int indx=word.length() - pass.get(i).get(j).length();
-					if(replaceRule.containsKey(pass.get(i).get(j)))
+					int indx = word.length() - replacePrefix.length();
+					if(replaceRule.containsKey(replacePrefix))
 					{
-						String tmp=replaceRule.get(pass.get(i).get(j));
+						String replaceSuffix = replaceRule.get(replacePrefix);
 						StringBuilder builder=new StringBuilder(word);
 						int k,l;
-						for(k=indx,l=0;k<indx+tmp.length();k++,l++)
+						for(k=indx,l=0;k<indx+replaceSuffix.length();k++,l++)
 						{
-							if(tmp.charAt(l)!='.')
+							if(replaceSuffix.charAt(l)!='.')
 							{
-								builder.setCharAt(k, tmp.charAt(l));
+								builder.setCharAt(k, replaceSuffix.charAt(l));
 							}
 						}
 						word=builder.substring(0, k);
 					}
-					else if(escape.contains(pass.get(i).get(j)) || check(word.substring(0, indx)))
+					else if(/* escape.contains(pass.get(i).get(j)) || */ check(word.substring(0, indx)))
 					{
 						word=word.substring(0, indx);
 					}
+					
+					break;
 				}
 			}
 		}
-		System.out.println(word);
+		
 		return word;
 	}
 	
-	public void dependantCharSetInstallation()
+	private void dependantCharSetInstallation()
 	{
 		st=new TreeSet<Character>();
 		st.add('া');
@@ -138,50 +147,39 @@ public class RuleFileParser {
 		st.add('ো');
 	}
 	
-	public void escapeOfRuleInstallation()
-	{
-		escape=new TreeSet<String>();
-		escape.add("চ্ছি");
-		escape.add("চ্ছিল");
-		escape.add("চ্ছে");
-		escape.add("চ্ছিস");
-		escape.add("চ্ছিলেন");
-		escape.add("টি");
-		escape.add("টা");
-		escape.add("েরটা");
-		escape.add("গুলো");
-	}
+//	private void escapeOfRuleInstallation()
+//	{
+//		escape=new TreeSet<String>();
+//		escape.add("চ্ছি");
+//		escape.add("চ্ছিল");
+//		escape.add("চ্ছে");
+//		escape.add("চ্ছিস");
+//		escape.add("চ্ছিলেন");
+//		escape.add("টি");
+//		escape.add("টা");
+//		escape.add("েরটা");
+//		escape.add("গুলো");
+//	}
 	
-	public boolean check(String x)
+	private boolean check(String word)
 	{
 		int i;
-		int ln=0;
+		int wordLength = 0;
 		
-		for(i=0;i<x.length();i++)
+		for(i=0;i<word.length();i++)
 		{
-			if(st.contains(x.charAt(i))) continue;
-			ln++;
+			if(st.contains(word.charAt(i))) 
+				continue;
+			wordLength++;
 		}
 		
-		return ln>1;
+		return wordLength >= 1;
 	}
 	
 	
-	public void unlikelyEndOfWordCorrection(String x)
+	private void unlikelyEndOfWordCorrection(String x)
 	{
 		
 	}
-	
-	
-	private ArrayList<String> l;
-	private ArrayList< ArrayList<String> > pass;
-	
-	String curlyOpen="{";
-	String curlyClose="}";
-	
-	private TreeSet<Character> st;
-	private TreeSet<String> escape;
-	private HashMap<String,String> replaceRule;
-	
 	
 }
