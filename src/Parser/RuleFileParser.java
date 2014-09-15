@@ -7,6 +7,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -30,6 +31,9 @@ public class RuleFileParser {
 		    	line=whiteSpaceTrim(line);
 		    	line=commentTrim(line);
 		    	if(line.equals("")) continue;
+		    	
+		    	
+		    	
 		    	l.add(line);
 		    }
 			
@@ -56,9 +60,6 @@ public class RuleFileParser {
 		}
 		
 		
-		
-		stemOfWord("করেছিলেন");
-		
 	}
 	
 	public String whiteSpaceTrim(String str)
@@ -69,6 +70,16 @@ public class RuleFileParser {
 	public String commentTrim(String str)
 	{
 		return str.replaceAll("#.*", "");
+	}
+	
+	public String extractReplaceRule(String x)
+	{
+		if(x.matches("[.*->.*]"))
+		{
+			String[] l=x.split("->");
+			return l[1];
+		}
+		return "";
 	}
 	
 	public  String stemOfWord(String word)
@@ -130,6 +141,7 @@ public class RuleFileParser {
 	String curlyClose="}";
 	
 	private TreeSet<Character> st;
+	private HashMap<String,String> replaceRule;
 	
 	
 }
