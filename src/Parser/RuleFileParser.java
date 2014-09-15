@@ -64,9 +64,6 @@ public class RuleFileParser {
 			}
 		}
 		
-		stemOfWord("পেয়েছিলেন");
-		
-		
 	}
 	
 	public String whiteSpaceTrim(String str)
@@ -81,7 +78,7 @@ public class RuleFileParser {
 	
 	public String extractReplaceRule(String x)
 	{
-		if(x.matches("[.*->.*]"))
+		if(x.matches(".*->.*"))
 		{
 			String[] l=x.split("->");
 			return l[1];
@@ -104,7 +101,6 @@ public class RuleFileParser {
 				if(word.matches(matcher))
 				{
 					int indx=word.length() - pass.get(i).get(j).length();
-					System.out.println(pass.get(i).get(j));
 					if(replaceRule.containsKey(pass.get(i).get(j)))
 					{
 						String tmp=replaceRule.get(pass.get(i).get(j));
@@ -170,6 +166,11 @@ public class RuleFileParser {
 		return ln>1;
 	}
 	
+	
+	public void unlikelyEndOfWordCorrection(String x)
+	{
+		
+	}
 	
 	
 	private ArrayList<String> l;
