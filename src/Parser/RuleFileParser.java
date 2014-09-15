@@ -18,6 +18,7 @@ public class RuleFileParser {
 	
 	public RuleFileParser(String p)
 	{
+		replaceRule= new HashMap<String,String>();
 		dependantCharSetInstallation();
 		Charset charset=Charset.forName("UTF-8");
 		Path path=FileSystems.getDefault().getPath(p);
@@ -32,8 +33,13 @@ public class RuleFileParser {
 		    	line=commentTrim(line);
 		    	if(line.equals("")) continue;
 		    	String replace=extractReplaceRule(line);
-		    	
+		    	line=line.replaceAll("->.*", "");
+		    	if(!replace.equals(""))
+		    	{
+		    		replaceRule.put(line,replace);
+		    	}
 		    	l.add(line);
+		    	
 		    }
 			
 		}
