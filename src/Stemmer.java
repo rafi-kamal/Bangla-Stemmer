@@ -11,6 +11,6 @@ public class Stemmer {
 		String ruleFilePath=args[0];
 		String inputFilePath=args[1];
 		RuleFileParser x=new RuleFileParser(ruleFilePath);
-		
+		//x.stemOfWord("করে");
 	}
 }
