@@ -35,18 +35,24 @@ public class RuleFileParser {
 		    System.err.format("IOException: %s%n", x);
 		}
 		int cnt=0;
-		for(int i=0;i<l.size();i++)
+		int i;
+		for(i=0;i<l.size();i++)
 		{
-			System.out.println(i);
 			if(l.get(i).equals(curlyOpen))
 			{
+				pass.add(new ArrayList<String>());
 				i++;
 				while(i<l.size() && ! l.get(i).equals(curlyClose))
 				{
-					System.out.println(l.get(i));
+					pass.get(cnt).add(l.get(i));
 					i++;
 				}
+				cnt++;
 			}
+		}
+		for(i=0;i<pass.get(2).size();i++)
+		{
+			System.out.println(pass.get(2).get(i));
 		}
 	}
 	
