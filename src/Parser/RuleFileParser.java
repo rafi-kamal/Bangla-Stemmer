@@ -20,6 +20,7 @@ public class RuleFileParser {
 	{
 		replaceRule= new HashMap<String,String>();
 		dependantCharSetInstallation();
+		escapeOfRuleInstallation();
 		Charset charset=Charset.forName("UTF-8");
 		Path path=FileSystems.getDefault().getPath(p);
 		l=new ArrayList<String> ();
@@ -39,7 +40,6 @@ public class RuleFileParser {
 		    		replaceRule.put(line,replace);
 		    	}
 		    	l.add(line);
-		    	
 		    }
 			
 		}
@@ -63,6 +63,8 @@ public class RuleFileParser {
 				cnt++;
 			}
 		}
+		
+		stemOfWord("পেয়েছিলেন");
 		
 		
 	}
@@ -102,14 +104,29 @@ public class RuleFileParser {
 				if(word.matches(matcher))
 				{
 					int indx=word.length() - pass.get(i).get(j).length();
-					if(check(word.substring(0, indx)))
+					System.out.println(pass.get(i).get(j));
+					if(replaceRule.containsKey(pass.get(i).get(j)))
+					{
+						String tmp=replaceRule.get(pass.get(i).get(j));
+						StringBuilder builder=new StringBuilder(word);
+						int k,l;
+						for(k=indx,l=0;k<indx+tmp.length();k++,l++)
+						{
+							if(tmp.charAt(l)!='.')
+							{
+								builder.setCharAt(k, tmp.charAt(l));
+							}
+						}
+						word=builder.substring(0, k);
+					}
+					else if(escape.contains(pass.get(i).get(j)) || check(word.substring(0, indx)))
 					{
 						word=word.substring(0, indx);
-						System.out.println(word+" "+indx);
 					}
 				}
 			}
 		}
+		System.out.println(word);
 		return word;
 	}
 	
