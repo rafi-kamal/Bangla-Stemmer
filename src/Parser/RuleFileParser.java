@@ -176,10 +176,4 @@ public class RuleFileParser {
 		return wordLength >= 1;
 	}
 	
-	
-	private void unlikelyEndOfWordCorrection(String x)
-	{
-		
-	}
-	
 }
