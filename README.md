@@ -10,7 +10,7 @@ Running the application
 -----------------------
 Run the application using the following command:
 ```
-Stemmer -r rulesfile inputfile
+Stemmer rulesfile inputfile
 ```
 Rules file defines how the stemming will be conducted. The default rules file is ``common.rules``, which is included in this repository.
 
