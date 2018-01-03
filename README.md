@@ -8,7 +8,7 @@ Sample Output: করিম কাজ কর
 
 Running the application
 -----------------------
-Run the application using the following command:
+Run `Stemmer.java`, passing the rules file and the input file as command line arguments.
 ```
 Stemmer rulesfile inputfile
 ```
